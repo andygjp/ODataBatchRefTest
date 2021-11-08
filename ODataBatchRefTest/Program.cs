@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Batch;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.OData.ModelBuilder;
 
@@ -40,8 +41,8 @@ public class Contacts : ODataController
         return new Contact { Id = key };
     }
     
-    public Contact Post(Contact entity)
+    public CreatedODataResult<Contact> Post(Contact entity)
     {
-        return entity;
+        return Created(entity);
     }
 }
