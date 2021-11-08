@@ -1,0 +1,89 @@
+GET {{host}}/Contacts
+
+> {%
+client.test("Get all contacts", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+###
+
+POST {{host}}/$batch
+Content-Type: application/json
+
+{
+  "requests": [
+    {
+      "id": "1",
+      "method": "GET",
+      "url": "Contacts"
+    }
+  ]
+}
+
+> {%
+client.test("Get all contacts via batch", function() {
+  client.assert(response.status === 200);
+});
+%}
+
+###
+
+POST {{host}}/$batch
+Content-Type: application/json
+
+{
+  "requests": [
+    {
+      "id": "1",
+      "method": "GET",
+      "url": "Contacts"
+    },
+    {
+      "id": "2",
+      "dependsOn": [ "1" ],
+      "method": "GET",
+      "url": "Contacts/1"
+    }
+  ]
+}
+
+> {%
+client.test("Get all and then a single contact", function() {
+  client.assert(response.status === 200);
+});
+%}
+###
+
+# This should work
+POST {{host}}/$batch
+Content-Type: application/json
+
+{
+  "requests": [
+    {
+      "id": "1",
+      "method": "POST",
+      "url": "Contacts",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "body": {
+        "Id": 10,
+        "Name": "John Smith"
+      }
+    },
+    {
+      "id": "2",
+      "dependsOn": [ "1" ],
+      "method": "GET",
+      "url": "$1"
+    }
+  ]
+}
+
+> {%
+client.test("Create a contact and get it", function() {
+  client.assert(response.status === 200);
+});
+%}
